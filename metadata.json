@@ -1,0 +1,5 @@
+{
+  "name": "Calligra",
+  "description": "A browser-based calligraphy trainer with real-time AI feedback and smooth Three.js stroke rendering.",
+  "requestFramePermissions": []
+}
