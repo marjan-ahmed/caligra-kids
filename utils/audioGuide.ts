@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 
 export async function generateAudioGuide(letter: string, brushType: string, mode: string) {
   if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
@@ -8,20 +8,19 @@ export async function generateAudioGuide(letter: string, brushType: string, mode
 
   const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
 
-  let textToSay = "";
-  if (mode === "Beginner") {
-    textToSay = `Great job! Keep practicing the letter ${letter}! Follow the glowing trail.`;
-  } else {
-    textToSay = `Excellent work on the letter ${letter}! Remember to control your pressure with the ${brushType} tool.`;
-  }
-  const prompt = `Say cheerfully: ${textToSay}`;
+  const prompt = `You are a joyful kindergarten teacher. The user is practicing the letter '${letter}' using a '${brushType}' tool. 
+  Provide a short, encouraging 1-2 sentence real-time audio guide. 
+  Mode: ${mode}. 
+  If Beginner: Focus on basic stroke order, direction, and simple encouragement.
+  If Advanced: Focus on pressure control, angle, flow, and nuanced technique for the specific tool.
+  Keep it brief, warm, and conversational. Do not use markdown.`;
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
       contents: [{ parts: [{ text: prompt }] }],
       config: {
-        responseModalities: ["AUDIO"],
+        responseModalities: [Modality.AUDIO],
         speechConfig: {
           voiceConfig: {
             prebuiltVoiceConfig: { voiceName: 'Kore' }, // Warm voice

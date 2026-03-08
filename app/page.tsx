@@ -70,7 +70,8 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsStarted(true)}
-            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white bg-indigo-600 hover:bg-indigo-500 rounded-full text-2xl shadow-lg shadow-indigo-500/30 overflow-hidden transition-colors"
+            className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white rounded-full text-2xl shadow-lg overflow-hidden"
+            style={{ backgroundImage: 'linear-gradient(to right, #FF0000, #FF7F00, #FBBF24, #00FF00, #3B82F6, #4B0082, #9400D3)' }}
           >
             <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-56 group-hover:h-56 opacity-10"></span>
             <Sparkles className="mr-3 animate-pulse" />

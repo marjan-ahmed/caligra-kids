@@ -234,11 +234,8 @@ export default function FeedbackPanel({
             playSound('pop');
           }}
           disabled={isAnalyzing}
-          className={`flex-1 py-3 px-4 rounded-full text-white text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm ${
-            isDark
-              ? "bg-indigo-600 hover:bg-indigo-500"
-              : "bg-[#5A5A40] hover:bg-[#4a4a35]"
-          }`}
+          className={`flex-1 py-3 px-4 rounded-full text-white text-sm font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-md`}
+          style={{ backgroundImage: 'linear-gradient(to right, #FF0000, #FF7F00, #FBBF24, #00FF00, #3B82F6, #4B0082, #9400D3)' }}
         >
           {isAnalyzing ? (
             <Loader2 size={16} className="animate-spin" />
