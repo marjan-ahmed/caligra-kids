@@ -5,16 +5,35 @@ import Sidebar from "@/components/Sidebar";
 import FeedbackPanel from "@/components/FeedbackPanel";
 import Toolbar from "@/components/Toolbar";
 import AudioGuide from "@/components/AudioGuide";
-import { useRef, useState } from "react";
+import GestureController from "@/components/GestureController";
+import { useRef, useState, useEffect } from "react";
 import { CalligraphyCanvasHandle } from "@/components/CalligraphyCanvas";
 import { useStore } from "@/store/useStore";
-import { motion } from "motion/react";
-import { Sparkles, Hand, Volume2, Undo2, Palette } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Sparkles, Hand, Volume2, Undo2, Palette, Menu, X, ChevronRight, ChevronLeft } from "lucide-react";
 
 export default function Home() {
   const canvasRef = useRef<CalligraphyCanvasHandle>(null);
-  const { theme } = useStore();
+  const { theme, setCanvasRef } = useStore();
   const [isStarted, setIsStarted] = useState(false);
+  
+  useEffect(() => {
+    setCanvasRef(canvasRef);
+  }, [setCanvasRef]);
+
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showMobileFeedback, setShowMobileFeedback] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const isDark = theme === "dark";
 
   if (!isStarted) {
@@ -83,19 +102,98 @@ export default function Home() {
 
   return (
     <main
-      className={`flex w-full h-screen overflow-hidden transition-colors duration-300 ${
+      className={`flex w-full h-screen overflow-hidden transition-colors duration-300 relative ${
         isDark ? "bg-zinc-950 text-zinc-100" : "bg-[#f5f5f0] text-[#1a1a1a]"
       }`}
     >
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Desktop Sidebar / Mobile Drawer Overlay */}
+      <AnimatePresence>
+        {(!isMobile || showMobileSidebar) && (
+          <motion.div
+            initial={isMobile ? { x: -320 } : false}
+            animate={{ x: 0 }}
+            exit={{ x: -320 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className={`fixed inset-y-0 left-0 z-50 lg:relative lg:z-0 lg:block ${isMobile ? 'shadow-2xl' : ''}`}
+          >
+            <Sidebar />
+            {isMobile && (
+              <button 
+                onClick={() => setShowMobileSidebar(false)}
+                className="absolute top-4 -right-12 p-2 bg-indigo-600 text-white rounded-r-xl shadow-lg"
+              >
+                <X size={20} />
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Backdrop for mobile */}
+      {isMobile && (showMobileSidebar || showMobileFeedback) && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => {
+            setShowMobileSidebar(false);
+            setShowMobileFeedback(false);
+          }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity"
+        />
+      )}
+
+      <div className="flex-1 flex flex-col min-w-0 relative h-full">
         <Toolbar />
-        <div className="flex-1 p-8 flex flex-col items-center justify-center relative min-h-0">
+        
+        {/* Mobile controls */}
+        {isMobile && (
+          <div className="absolute top-20 left-4 right-4 z-30 flex justify-between pointer-events-none">
+            <button
+              onClick={() => setShowMobileSidebar(true)}
+              className="p-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl shadow-lg border border-indigo-100 dark:border-zinc-800 pointer-events-auto active:scale-95 transition-transform"
+            >
+              <Menu size={20} className="text-indigo-600" />
+            </button>
+            <button
+              onClick={() => setShowMobileFeedback(true)}
+              className="p-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-2xl shadow-lg border border-indigo-100 dark:border-zinc-800 pointer-events-auto active:scale-95 transition-transform text-indigo-600"
+            >
+              <Sparkles size={20} />
+            </button>
+          </div>
+        )}
+
+        <div className="flex-1 p-4 md:p-8 flex flex-col items-center justify-center relative min-h-0">
           <CalligraphyCanvas ref={canvasRef} />
         </div>
       </div>
-      <FeedbackPanel canvasRef={canvasRef} />
+
+      {/* Desktop Feedback / Mobile Drawer Overlay */}
+      <AnimatePresence>
+        {(!isMobile || showMobileFeedback) && (
+          <motion.div
+            initial={isMobile ? { x: 320 } : false}
+            animate={{ x: 0 }}
+            exit={{ x: 320 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className={`fixed inset-y-0 right-0 z-50 lg:relative lg:z-0 lg:block ${isMobile ? 'shadow-2xl' : ''}`}
+          >
+            {isMobile && (
+              <button 
+                onClick={() => setShowMobileFeedback(false)}
+                className="absolute top-4 -left-12 p-2 bg-indigo-600 text-white rounded-l-xl shadow-lg"
+              >
+                <X size={20} />
+              </button>
+            )}
+            <FeedbackPanel canvasRef={canvasRef} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AudioGuide />
+      <GestureController />
     </main>
   );
 }

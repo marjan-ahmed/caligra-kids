@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useStore, BrushType } from '@/store/useStore';
-import { PenTool, Paintbrush, Highlighter, Pencil, Circle, Square, Minus, Hand, Volume2, VolumeX, GraduationCap, Undo2, Redo2 } from 'lucide-react';
+import { PenTool, Paintbrush, Highlighter, Pencil, Circle, Square, Minus, Hand, Volume2, VolumeX, GraduationCap, Undo2, Redo2, MousePointer2 } from 'lucide-react';
 import { playSound } from '@/utils/sounds';
 
 const BRUSHES: { type: BrushType; icon: React.ReactNode; label: string }[] = [
@@ -35,19 +35,20 @@ export default function Toolbar() {
     showGhostHand, setShowGhostHand,
     ghostHandOpacity, setGhostHandOpacity,
     audioEnabled, setAudioEnabled,
-    narrationMode, setNarrationMode
+    narrationMode, setNarrationMode,
+    gestureMode, setGestureMode
   } = useStore();
 
   const isDark = theme === 'dark';
 
   return (
-    <div className={`h-16 w-full border-b flex items-center px-6 gap-8 transition-colors duration-300 ${
+    <div className={`h-16 w-full border-b flex items-center px-4 md:px-6 gap-4 md:gap-8 transition-colors duration-300 overflow-x-auto custom-scrollbar no-scrollbar ${
       isDark ? 'bg-zinc-900 border-zinc-800 text-zinc-100' : 'bg-white border-[#e5e5e0] text-[#1a1a1a]'
     }`}>
       
       {/* Brushes */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-bold uppercase tracking-widest opacity-50 mr-2">Tool</span>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <span className="hidden sm:inline text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-50 mr-2">Tool</span>
         <div className={`flex p-1 rounded-xl ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
           {BRUSHES.map((brush) => (
             <button
@@ -76,8 +77,8 @@ export default function Toolbar() {
       <div className={`w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
 
       {/* Colors */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-bold uppercase tracking-widest opacity-50 mr-2">Color</span>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <span className="hidden sm:inline text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-50 mr-2">Color</span>
         <div className="flex gap-2">
           {COLORS.map((c) => (
             <button
@@ -109,8 +110,8 @@ export default function Toolbar() {
       <div className={`w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
 
       {/* Thickness */}
-      <div className="flex items-center gap-3 flex-1 max-w-[200px]">
-        <span className="text-xs font-bold uppercase tracking-widest opacity-50">Size</span>
+      <div className="flex items-center gap-3 flex-shrink-0 w-[120px] md:w-[200px]">
+        <span className="hidden md:inline text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-50">Size</span>
         <input
           type="range"
           min="1"
@@ -119,12 +120,12 @@ export default function Toolbar() {
           onChange={(e) => setThickness(Number(e.target.value))}
           className="w-full accent-indigo-600"
         />
-        <span className="text-xs font-mono w-6 text-right">{thickness}</span>
+        <span className="text-[10px] md:text-xs font-mono w-6 text-right">{thickness}</span>
       </div>
 
       {/* Opacity */}
-      <div className="flex items-center gap-3 flex-1 max-w-[150px]">
-        <span className="text-xs font-bold uppercase tracking-widest opacity-50">Flow</span>
+      <div className="flex items-center gap-3 flex-shrink-0 w-[100px] md:w-[150px]">
+        <span className="hidden md:inline text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-50">Flow</span>
         <input
           type="range"
           min="10"
@@ -133,13 +134,37 @@ export default function Toolbar() {
           onChange={(e) => setOpacity(Number(e.target.value) / 100)}
           className="w-full accent-indigo-600"
         />
-        <span className="text-xs font-mono w-8 text-right">{Math.round(opacity * 100)}%</span>
+        <span className="text-[10px] md:text-xs font-mono w-8 text-right">{Math.round(opacity * 100)}%</span>
       </div>
 
-      <div className={`w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+      <div className={`flex-shrink-0 w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+
+      {/* Gesture Controls */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          onClick={() => {
+            setGestureMode(!gestureMode);
+            playSound('pop');
+          }}
+          className={`p-2 rounded-lg transition-all ${
+            gestureMode
+              ? isDark 
+                ? 'bg-indigo-900/50 text-indigo-400' 
+                : 'bg-indigo-100 text-indigo-600'
+              : isDark
+                ? 'hover:bg-zinc-700/50 opacity-70 hover:opacity-100'
+                : 'hover:bg-zinc-200 opacity-70 hover:opacity-100'
+          }`}
+          title="Toggle Gesture Mode"
+        >
+          <MousePointer2 size={18} />
+        </button>
+      </div>
+
+      <div className={`flex-shrink-0 w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
 
       {/* Ghost Hand */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => {
             setShowGhostHand(!showGhostHand);
@@ -174,7 +199,7 @@ export default function Toolbar() {
       <div className={`w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
 
       {/* Audio Guide */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => {
             setAudioEnabled(!audioEnabled);
@@ -212,7 +237,7 @@ export default function Toolbar() {
       <div className={`w-px h-8 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
 
       {/* Undo / Redo */}
-      <div className="flex items-center gap-2 ml-auto">
+      <div className="flex items-center gap-2 ml-auto flex-shrink-0 pr-4">
         <button
           onClick={() => {
             const canvas = useStore.getState().canvasRef?.current;

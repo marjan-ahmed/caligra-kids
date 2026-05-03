@@ -1,5 +1,5 @@
 {
   "name": "Calligra",
   "description": "Calligra Kids! A magical alphabet-learning adventure with glowing rainbow trails, 3D calligraphy brushes, and a friendly AI coach.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["camera"]
 }

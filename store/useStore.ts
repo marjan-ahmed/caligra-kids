@@ -60,6 +60,10 @@ interface AppState {
   narrationMode: NarrationMode;
   setNarrationMode: (mode: NarrationMode) => void;
 
+  // Gesture Controls
+  gestureMode: boolean;
+  setGestureMode: (enabled: boolean) => void;
+
   // History (Undo/Redo)
   history: string[];
   historyIndex: number;
@@ -102,6 +106,9 @@ export const useStore = create<AppState>((set) => ({
   setAudioEnabled: (enabled) => set({ audioEnabled: enabled }),
   narrationMode: "Beginner",
   setNarrationMode: (mode) => set({ narrationMode: mode }),
+
+  gestureMode: false,
+  setGestureMode: (enabled) => set({ gestureMode: enabled }),
 
   history: [],
   historyIndex: -1,
