@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -10,6 +11,7 @@ const nextConfig: NextConfig = {
   },
   // Allow access to remote image placeholder.
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -19,7 +21,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  transpilePackages: ["motion", "three", "lucide-react"],
+  transpilePackages: ["motion"],
   webpack: (config, { dev }) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
     // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
